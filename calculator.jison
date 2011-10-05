@@ -9,8 +9,10 @@
 "NULL"                return 'NOTHING'
 [0-9]+("."[0-9]+)?\b  return 'NUMBER'
 [a-zA-Z0-9]+          return 'VAR'
+"~"                   return 'NOT'
 "&"                   return '&'
-"#"                   return '#'
+"|"                   return '|'
+":="                  return ':='
 "=>"                  return '=>'
 "->"                  return '->'
 "-*>"                 return '-*>'
@@ -41,7 +43,7 @@
 %left VAR
 %right ','
 %left '=>'
-%left '&'
+%left '&', '|'
 %left '->','-*>'
 %left '='
 %left '+' '-'
@@ -50,7 +52,8 @@
 %right '!'
 %right '%'
 %left UMINUS
-%left '#'
+%left ':='
+%left NOT
 %left '.'
 
 %start expressions
@@ -72,6 +75,8 @@ e
         {$$ = "(-*> "+$1+ " "+ $3 +")";}
     | e '&' e
         {$$ = "(and "+$1+ " "+ $3 +")";}
+    | e '|' e
+        {$$ = "(or "+$1+ " "+ $3 +")";}
     | e '=' e
         {$$ = "(= "+$1+ " "+ $3 +")";}
     | e '+' e
@@ -88,6 +93,8 @@ e
         {{
           $$ = "(factorial "+ $1 +")";
         }}
+    | NOT e
+        {$$ = "(not "+ $2 +")";}
     | e '%'
         {$$ = "(/ "+$1+ " 100)";}
     | '-' e %prec UMINUS
@@ -96,7 +103,7 @@ e
         {$$ = $2;}
     | '[' e ']'
         {$$ = '('+$2+')';}
-    | e '#' e
+    | e ':=' e
         {$$ = '('+$1+' '+$3+')';}
     | NUMBER
         {$$ = Number(yytext);}
