@@ -13,7 +13,7 @@ switch (yystate) {
 case 1: typeof console !== 'undefined' ? console.log($$[$0-1]) : print($$[$0-1]);
           return $$[$0-1]; 
 break;
-case 2:this.$ = "(implies "+$$[$0-2]+ " "+ $$[$0] +")";
+case 2:this.$ = "(=> "+$$[$0-2]+ " "+ $$[$0] +")";
 break;
 case 3:this.$ = "(-> "+$$[$0-2]+ " "+ $$[$0] +")";
 break;
