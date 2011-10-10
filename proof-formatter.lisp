@@ -4,6 +4,10 @@
 
 ; (defmacro output-file () "afs/cs.stanford.edu/u/clee0/www/tmp/output.txt")
 
+; TODO better handling of forbidden names... won't actually break right now, but it's pretty inconsistent
+(defun forbidden-names ()
+  '(nil and or = * + /))
+
 ;;; DISPLAY ;;;
 
 ; Recursively removes quotes from an expression or list
@@ -128,7 +132,7 @@
            nil))
         (T
           (let  ((formatted-assumption (mark-constants-assumption (first x) constants)))
-           (if (not (pseudo-termp formatted-assumption))
+           (if (not (pseudo-termp (second formatted-assumption)))
              (prog2$
                (my-cw output-file "ERROR: Statement ~x0 of assumption ~x1 is not a well-formed expression.~%" (remove-quote (second formatted-assumption)) (remove-quote (first formatted-assumption)))
                nil)
@@ -213,9 +217,7 @@
         (T
           (let ((formatted-rule (mark-constants-rule (first x) constants)))
            (if (not (pseudo-termp (second formatted-rule)))
-             (prog2$
-               (my-cw output-file "ERROR: Statement ~x0 of rule ~x1 is not a well-formed expression.~%" (remove-quote (second formatted-rule)) (remove-quote (first formatted-rule)))
-               nil)
+             (my-cw output-file "ERROR: Statement ~x0 of rule ~x1 is not a well-formed expression.~%" (remove-quote (second formatted-rule)) (remove-quote (first formatted-rule)))
              (let ((formatted-remainder (prepare-rules-sub output-file (rest x) constants)))
                (if (and (null formatted-remainder) (rest x))
                  nil ; Failure occurred in a later rule
@@ -255,16 +257,12 @@
   (if (not (check-mappings output-file x))
     nil
     (let ((fmt-alist (mark-constants-alist x constants))
-          (forbidden-names (append '(nil and or = * + /) constants))
+          (forbidden-names (append (forbidden-names) constants))
           (keys (strip-cars x)))
       (cond ((intersectp-equal forbidden-names keys)
-             (prog2$
-               (my-cw output-file "ERROR: Found forbidden name(s): ~x0.~%" (remove-quote (intersection-equal forbidden-names keys)))
-               nil))
+             (my-cw output-file "ERROR: Found forbidden name(s): ~x0.~%" (remove-quote (intersection-equal forbidden-names keys))))
             ((contains-numbers keys)
-             (prog2$
-               (my-cw output-file "ERROR: Association list may not map to numbers, but it does: ~x0.~%" (remove-quote fmt-alist))
-               nil))
+             (my-cw output-file "ERROR: Association list may not map to numbers, but it does: ~x0.~%" (remove-quote fmt-alist)))
             ((check-alist-vals output-file fmt-alist) fmt-alist)
             (T nil)))))
 

@@ -7,7 +7,7 @@ var exec = require('child_process').exec,
 
 var exc_cmd = "ccl -I ~/Brewless/acl2-sources/saved_acl2.dx86cl -e \"(acl2::acl2-default-restart)\" < ";
 var boilerplate = "(in package \"ACL2\")\n(program)\n(include-book \"proof-checker\")\n\n"
-var foot = function(tmp){ return "(proof-check \"" + tmp + "\" (assumptions) (rules) (proof) (constants) (required))\n" };
+var foot = function(tmp){ return "(verify-proof \"" + tmp + "\" (goal) (assumptions) (rules) (proof) (constants) (required) 0)\n" };
 
 server.use(express.bodyParser());
 
@@ -26,10 +26,12 @@ server.post('/prove', function(req,res){
       
   // Construct valid file string using post parameters
       
-  _.each(['rules', 'assumptions', 'constants', 'required', 'proof'], function(key){
+  _.each(['goal','rules', 'assumptions', 'constants', 'required', 'proof'], function(key){
     out_str += "(defun "+key+" ()\n";
-    if (post[key])
+    if (post[key] && key != "goal")
       out_str += "'("+post[key]+"))\n";
+    else if(key == "goal")
+      out_str += "'"+post[key]+")\n";
     else
       out_str += " nil)\n";
   });
