@@ -7,6 +7,9 @@
 
 \s+                   /* skip whitespace */
 "NULL"                return 'NOTHING'
+"ruleset"             return 'RULESET'
+"endset"              return 'END'
+\"(\\.|[^\"])*\"      return 'STRING'
 [0-9]+("."[0-9]+)?\b  return 'NUMBER'
 [a-zA-Z0-9]+          return 'VAR'
 "~"                   return 'NOT'
@@ -72,7 +75,9 @@ expressions
     ;
 
 e
-    : e '=>' e
+    : RULESET VAR STRING e END
+       {$$ = $4;}
+    | e '=>' e
         {$$ = "(=> "+$1+ " "+ $3 +")";}
     | e '<=>' e
         {$$ = "(<=> "+$1+ " "+ $3 +")";}
@@ -120,6 +125,8 @@ e
         {$$ = '('+$1+' '+$3+')';}
     | NUMBER
         {$$ = Number(yytext);}
+    | STRING
+        {$$ = String(yytext);}
     | VAR
         {$$ = String(yytext);}
     | E

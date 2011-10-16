@@ -1,1 +1,24 @@
-~(A => ~B)
+ETHAN : A = A,
+COOL : D + D = 2D,
+ruleset TP 
+  "P | Q, ~P -> Q" 
+  TP1 : (P | Q) & ~P => Q,
+  TP2 : (P | Q) & ~Q => P,
+  TP3 : (P | Q) --> (~P => Q),
+  TP4 : (P | Q) --> (~Q => P),
+  TP5 : ~P --> (P | Q) => Q,
+  TP6 : ~Q --> (P | Q) => P,
+  TP7 : (P | Q) && ~P --> Q,
+  TP8 : (P | Q) && ~Q --> P
+endset,
+ruleset TP 
+  "P | Q, ~P -> Q" 
+  TP1 : (P | Q) & ~P => Q,
+  TP2 : (P | Q) & ~Q => P,
+  TP3 : (P | Q) --> (~P => Q),
+  TP4 : (P | Q) --> (~Q => P),
+  TP5 : ~P --> (P | Q) => Q,
+  TP6 : ~Q --> (P | Q) => P,
+  TP7 : (P | Q) && ~P --> Q,
+  TP8 : (P | Q) && ~Q --> P
+endset
