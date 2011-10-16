@@ -35,6 +35,7 @@
 ")"                   return ')'
 "PI"                  return 'PI'
 "E"                   return 'E'
+"::"                  return '::'
 ":"                   return ':'
 "["                   return '['
 "]"                   return ']'
@@ -47,8 +48,8 @@
 
 /* operator associations and precedence */
 
-%left VAR
 %right ','
+%left VAR
 %left '-->'
 %left '=>','<=>'
 %left '&', '|', '&&', '||'
@@ -136,6 +137,8 @@ e
     | NOTHING
         {$$ = "";}
     | VAR ':' e
+        {$$ = "("+$1+" "+$3+")";}
+    | VAR '::' e %prec ','
         {$$ = "("+$1+" "+$3+")";}
     | VAR '(' e ')'
         {$$ = "("+$1+" "+$3+")";}
